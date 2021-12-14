@@ -1,0 +1,44 @@
+body {
+	user-select: none;
+	margin: 5%;
+}
+
+#time {
+	font-weight: bold;
+	font-size: 4vw;
+}
+
+#time > b {
+	color: red;
+}
+
+#map {
+	display: grid;
+	width: 50vw;
+	height: 50vw;
+
+	grid-template-columns: repeat(4, 25%);
+	grid-template-rows: repeat(4, 25%);
+}
+
+#map > span {
+    padding: 30%;
+	background: chocolate;
+	border-radius: 10%;
+	margin: 3%;
+	text-align: center;
+    color: white;
+	transition: background-color .5s;
+	font-size: 3.5vw;
+}
+
+#map > span:hover {
+	background-color: darksalmon;
+}
+
+#map > #b-15 {
+	background-color: darksalmon;
+}
+#map > #b-16 {
+	display: none;
+}
