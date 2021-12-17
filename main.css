@@ -1,35 +1,61 @@
 body {
+	display: flex;
 	user-select: none;
-	margin: 5%;
+	margin: 0;
 }
 
-#time {
+h1, h2 {
+	text-align: center;
+}
+h1 { font-size: 4vw; }
+h2 { font-size: 3vw; }
+
+#info {
 	font-weight: bold;
-	font-size: 4vw;
 }
 
-#time > b {
+#rank {
+	margin-right: 10vw;
+}
+
+#win, #rank > li:nth-child(1) {
 	color: red;
+	text-shadow: 0 0 5px orange;
+}
+#rank > li:nth-child(2) { color: red; }
+#rank > li:nth-child(3) { color: blue; }
+
+#rank > li > input {
+	width: 10vw;
+}
+#rank > li::marker {
+	color: black;
+}
+
+#rank > li > del {
+	margin-right: 1vw;
 }
 
 #map {
 	display: grid;
-	width: 50vw;
-	height: 50vw;
+	width: 30vw;
+	height: 30vw;
+	margin-left: auto;
+	margin-right: auto;
 
 	grid-template-columns: repeat(4, 25%);
 	grid-template-rows: repeat(4, 25%);
 }
 
 #map > span {
-    padding: 30%;
+	padding: 30%;
 	background: chocolate;
 	border-radius: 10%;
 	margin: 3%;
 	text-align: center;
-    color: white;
+	color: white;
 	transition: background-color .5s;
-	font-size: 3.5vw;
+	font-size: 2.5vw;
 }
 
 #map > span:hover {
