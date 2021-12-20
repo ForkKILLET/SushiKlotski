@@ -21,6 +21,9 @@ let min, sec
 
 const record_win = () => {
 	sec = (Date.now() - t_0) % 1e6 / 1e3
+	min += ~~ (sec / 60)
+	sec %= 60
+
 	$info.innerHTML = `<b id="win">Win!</b> in <u>${min}:${sec}</u>`
 	stt = "win"
 	clearInterval(t_time)
@@ -28,7 +31,7 @@ const record_win = () => {
 
 	const l = rank()
 	const $new = document.createElement("li")
-	$new.innerHTML = `by <input id="name" /> in <u>${min}:${sec}</u>`
+	$new.innerHTML = `by <input id="name" /> in <del></del> <u>${min}:${sec}</u>`
 
 	let is_last = ! l.length
 	let i
@@ -133,7 +136,10 @@ const stt_op = {
 				if (min < old[1] || min === old[1] && sec < old[2]) {
 					old[1] = min
 					old[2] = sec
-					$old.innerHTML = $old.innerHTML.replaceAll("u", "del") + `<u>${min}:${sec}</u>`
+					const $old_time = $old.children[1]
+					const $new_time = $old.children[2]
+					$old_time.innerHTML = $new_time.innerHTML
+					$new_time.innerHTML = `${min}:${sec}`
 					return l
 				}
 				return 
@@ -156,6 +162,6 @@ $info.onclick = evt => stt_op[stt](evt)
 	
 rank().forEach(([ name, min, sec ]) => {
 	const $l = document.createElement("li")
-	$l.innerHTML = `by <strong>${name}</strong> in <u>${min}:${sec}</u>`
+	$l.innerHTML = `by <strong>${name}</strong> in <del></del> <u>${min}:${sec}</u>`
 	$rank.appendChild($l)
 })

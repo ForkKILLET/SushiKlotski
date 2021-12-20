@@ -32,8 +32,8 @@ h2 { font-size: 3vw; }
 	color: black;
 }
 
-#rank > li > del {
-	margin-right: 1vw;
+#rank > li > del:empty {
+	display: none;
 }
 
 #map {
