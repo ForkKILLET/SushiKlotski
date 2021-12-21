@@ -1,6 +1,15 @@
 const $ = s => document.querySelector(s)
-const sen = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮"
-"お寿司は日本の伝統な食べ物です"
+Math.rand = max => ~~ (Math.random() * 1e6) % max
+
+const sens = [
+	"①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮",
+	"お寿司は日本の伝統な食べ物です",
+	"鞄の中には寿司が五つありました",
+	"今朝施さんに寿司をもらいました",
+	"１週間このゲームを開発しますね"
+]
+let won_sens
+let sen_id
 
 const $map = $("#map")
 let $tmp
@@ -10,20 +19,27 @@ const $rank = $("#rank")
 
 const delta = [ [ -1, 0 ], [ 1, 0 ], [ 0, -1 ], [ 0, 1 ] ]
 const key_delta = {
-	ArrowLeft: [ -1, 0 ],
-	ArrowRight: [ 1, 0 ],
-	ArrowUp: [ 0, -1 ],
-	ArrowDown: [ 0, 1 ]
+	ArrowLeft:		[ -1, 0 ],
+	ArrowRight:	[ 1, 0 ],
+	ArrowUp:		[ 0, -1 ],
+	ArrowDown:	[ 0, 1 ]
 }
+const linal_delta = [
+	[ x => x % 4,	-1 ],
+	[ x => (x + 1) % 4,	1 ],
+	[ x => x >= 4,	-4 ],
+	[ x => x < 12,	4 ]
+]
 
 const is_xy_invalid = (x, y) => x < 0 || x > 3 || y < 0 || y > 3
 
 let debug = {
 	immediate_win: false,
-	delete_record: false
+	delete_record: false,
+	shuffle_time: 1e6
 }
 
-const have_won = () => debug.immediate_win || [ ...$map.children ].map($i => $i.innerHTML).join("") === sen + " "
+const have_won = () => debug.immediate_win || [ ...$map.children ].map($i => $i.innerHTML).join("") === sens[sen_id] + " "
 
 let t_time, t_info, t0
 let stt = "start"
@@ -55,10 +71,51 @@ const record_win = () => {
 		const $before = $rank.children[i]
 		$rank.insertBefore($new, $before)
 	}
+
+	won_sens.push(sen_id)
+	localStorage.sen = JSON.stringify(won_sens)
 }
 
 const gen = () => {
 	stt = "play"
+
+	won_sens = JSON.parse(localStorage.sen ?? "[]")
+
+	if (sens.length === won_sens .length) {
+		$info.innerHTML = "All cleared..."
+		return
+	}
+	do sen_id = Math.rand(sens.length)
+	while (won_sens.includes(sen_id))
+
+	const chao = [ ...sens[sen_id], " " ]
+	let emp = 15
+	for (let i = 0; i < debug.shuffle_time; i ++) {
+		const [ checker, d ] = linal_delta[ Math.rand(4) ]
+		if (! checker(emp)) continue
+		[ chao[emp], chao[emp + d] ] = [ chao[emp + d], chao[emp] ];
+		emp += d
+	}
+
+	$map.innerHTML = ""
+	for (let i = 0; i <= 16; i ++) {
+		const $b = document.createElement("span")
+		$map.appendChild($b)
+
+		const ch = chao[i]
+		if (ch === " ") $b.id = "emp"
+		if (! ch) {
+			$b.id = "tmp"
+			$tmp = $b
+			break
+		}
+
+		$b.dataset.x = i % 4
+		$b.dataset.y = ~~ (i / 4)
+		$b.innerHTML = chao[i]
+		$b.addEventListener("click", move.mouse)
+	}
+
 	$info.innerHTML = "<u>0:0</u>"
 	
 	clearInterval(t_time)
@@ -71,23 +128,6 @@ const gen = () => {
 		sec ++
 		if (sec === 60) sec = 0, min ++
 	}, 1000)
-	$map.innerHTML = ""
-
-	const chao = [ ...sen ].sort(() => Math.random() - .5)
-	for (let i = 0; i <= 16; i ++) {
-		const $b = document.createElement("span")
-		$b.id = `b-${i}`
-		$map.appendChild($b)
-		if (i == 16) {
-			$tmp = $b
-			break
-		}
-
-		$b.dataset.x = i % 4
-		$b.dataset.y = ~~ (i / 4)
-		$b.innerHTML = chao[i] ?? " "
-		$b.addEventListener("click", move.mouse)
-	}
 }
 
 const move = {
@@ -110,7 +150,7 @@ const move = {
 			if (is_xy_invalid(x_, y_)) continue
 
 			const $nxt = $block(x_, y_)
-			if ($nxt.id === "b-15") {
+			if ($nxt.id === "emp") {
 				move.do($cur, $nxt)
 				if (have_won()) record_win()
 				break
@@ -123,7 +163,7 @@ const move = {
 		const d = key_delta[evt.key]
 		if (! d) return
 
-		const $emp = $("#b-15")
+		const $emp = $("#emp")
 		const { x, y } = $emp.dataset
 		const [ dx, dy ] = d
 		const x_ = x - dx
@@ -175,7 +215,7 @@ const stt_op = {
 					$new_time.innerHTML = `${min}:${sec}`
 					return l
 				}
-				return 
+				return
 			}
 		})
 		if (use_old) return
@@ -196,7 +236,7 @@ $info.addEventListener("click", exe_op)
 document.addEventListener("keydown", evt => {
 	if (evt.key === "Enter") exe_op(evt)
 })
-	
+
 rank().forEach(([ name, min, sec ]) => {
 	const $l = document.createElement("li")
 	$l.innerHTML = `by <strong>${name}</strong> in <del></del> <u>${min}:${sec}</u>`

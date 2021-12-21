@@ -62,9 +62,33 @@ h2 { font-size: 3vw; }
 	background-color: darksalmon;
 }
 
-#map > #b-15 {
+#map > #emp {
 	background-color: darksalmon;
 }
-#map > #b-16 {
+#map > #tmp {
 	display: none;
+}
+
+#map:empty {
+	border-radius: 10%;
+	background-color: darksalmon;
+}
+
+#about {
+	width: 100%;
+	position: fixed;
+	bottom: 0;
+	height: 3vh;
+	background-color: darksalmon;
+	color: white;
+	text-align: center;
+	font-size: 2vh;
+}
+
+a ,a:visited {
+	color: blue;
+	transition: color .5s;
+}
+a:hover, a:active {
+	color: white;
 }
